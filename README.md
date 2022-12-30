@@ -5,4 +5,4 @@ Dies wird durch dieses Tool erledigt.
 
 
 
-[![Screenshot](https://github.com/Buchhems/Excel2ical/blob/main/screenshot.png "Screenshot")](https://sebastianbuch.de)
+[![Screenshot](https://github.com/Buchhems/Excel2ical/blob/main/screenshot.png "Screenshot")](https://hems.de)
