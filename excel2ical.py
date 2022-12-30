@@ -32,6 +32,10 @@ def excel_to_ics(excel_file_path, ics_file_path):
         # Check if information in start date is really a date
         if type(start) is not datetime.datetime:
             QMessageBox.critical(None, 'Error', f'{start} ist kein Startdatum! Excel überprüfen!')
+        
+        # strip the information in the cell of the time (unnecessary and looks ugly in ICS)
+        start = start.date()
+        
         # Combine date and time if time is given
         if type(row[2].value) == datetime.time:
             start = datetime.datetime.combine(row[1].value, row[2].value)
@@ -40,9 +44,14 @@ def excel_to_ics(excel_file_path, ics_file_path):
                 
         if(row[3].value is not None):
             end = row[3].value # end Date of the event
+            
             # Check if information in end date is really a date
             if type(end) is not datetime.datetime:
                 QMessageBox.critical(None, 'Error', f'{end} ist kein Enddatum! Excel überprüfen!')
+            
+            # strip the information in the cell of the time (unnecessary)
+            end = end.date()
+            
             if type(row[4].value) == datetime.time: # check if end time is given
                 end = datetime.datetime.combine(row[3].value, row[4].value)
             event.add('dtend', end)
