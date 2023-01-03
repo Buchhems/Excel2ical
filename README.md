@@ -7,4 +7,4 @@ Dies wird durch dieses Tool erledigt.
 
 [![Screenshot](https://github.com/Buchhems/Excel2ical/blob/main/screenshot.png "Screenshot")](https://hems.de)
 
-Icon by icelloid (https://icon-icons.com/de/pack/Online-Learning/3480)
+Icon by Yannick (https://icon-icons.com/de/users/hao5vBiTzx3djBqoJuU6V/icon-sets/)
