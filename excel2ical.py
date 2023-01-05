@@ -75,7 +75,7 @@ class FileConverter(QtWidgets.QWidget):
         
     def init_ui(self):
         self.setGeometry(100, 100, 800, 600)
-        self.setWindowTitle('Excel2ical von buc∂hems.de')
+        self.setWindowTitle('Excel2ical von buc @ hems.de')
         # Create a layout
         layout = QtWidgets.QVBoxLayout(self)
         # Create an explanation for the FileDialog
