@@ -1,6 +1,7 @@
 import datetime
+import os
+import sys
 import uuid
-from os import path
 from openpyxl import load_workbook
 from icalendar import Calendar, Event
 from tkinter import BOTTOM, TOP, Button, Label, PhotoImage, Tk, filedialog, messagebox
@@ -91,14 +92,25 @@ def convert_files():
         excel_to_ics(excfilepath, icsfilepath)
         messagebox.showinfo('Erfolg', 'Umwandlung erfolgreich')
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
 root = Tk()
+root.iconbitmap(resource_path("excel2ics.ico"))
 root.title('Excel2ical v2.0 (buc @ hems.de)')
 
 # Set the window size
 root.geometry("300x440")
 
 #load image and set make it a bit transparent
-pimage = PhotoImage(file="cal.png")
+pimage = PhotoImage(file=resource_path("cal.png"))
 pimage.alpha = 128
 
 #position image
