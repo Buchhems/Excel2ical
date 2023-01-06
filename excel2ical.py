@@ -80,7 +80,7 @@ def browse_excel_file():
 
 def browse_ics_file():
     global icsfilepath 
-    icsfilepath = filedialog.asksaveasfilename(title='ICS-Datei bestimmen', filetypes=[('ICS Dokument', '*.ics')]) 
+    icsfilepath = filedialog.asksaveasfilename(title='ICS-Datei bestimmen', filetypes=[('ICS Dokument', '*.ics')], defaultextension='.ics') 
     # next two lines to only show the filename on the label. The complete path would be too long to print.
     filename = os.path.basename(icsfilepath)
     ics_file_label.config(text="\n" + filename)
