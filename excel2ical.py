@@ -107,7 +107,7 @@ root.iconbitmap(resource_path("excel2ics.ico"))
 root.title('Excel2ical v2.0 (buc @ hems.de)')
 
 # Set the window size
-root.geometry("300x440")
+root.geometry("350x470")
 
 #load image and set make it a bit transparent
 pimage = PhotoImage(file=resource_path("cal.png"))
