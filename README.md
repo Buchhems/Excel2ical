@@ -4,7 +4,4 @@ Diese Daten sollen zusätzlich als ICS Datei für Outlook usw. exportierbar gema
 Dies wird durch dieses Tool erledigt.
 
 
-
-[![Screenshot](https://github.com/Buchhems/Excel2ical/blob/main/screenshot.png "Screenshot")](https://hems.de)
-
-Icon by Yannick (https://icon-icons.com/de/users/hao5vBiTzx3djBqoJuU6V/icon-sets/)
+calendar image by https://de.vecteezy.com/png/9306117-kalender-symbol-clipart-design-illustration
