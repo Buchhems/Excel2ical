@@ -1,37 +1,39 @@
-import os
-import sys
-import openpyxl
 import datetime
 import uuid
+from os import path
+from openpyxl import load_workbook
 from icalendar import Calendar, Event
-from PyQt5 import QtGui, QtCore, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
-
+from tkinter import BOTTOM, TOP, Button, Label, PhotoImage, Tk, filedialog, messagebox
 
 def excel_to_ics(excel_file_path, ics_file_path):
+
     # Open the Excel file
-    wb = openpyxl.load_workbook(excel_file_path)
+    wb = load_workbook(excel_file_path)
+    
     # Get the first sheet
     sheet = wb.worksheets[0]
+    
     # Create a new ICS calendar
     cal = Calendar()
+    
     # Set the calendar properties
     cal.add('prodid', '-//Der Schuljahreskalender//mxm.dk//')
     cal.add('version', '2.0')
-    # Iterate over the rows in the sheet, starting from the second row
+    
+    # Iterate over the rows in the sheet, starting from the second row, first row has the headlines
     for row in sheet.iter_rows(min_row=2):
         # Create a new ICS event
         event = Event()
  
-        event.add('uid', uuid.uuid4()) # UID of the event
-        event.add('dtstamp', datetime.datetime.now()) # Date of creation
+        event.add('uid', uuid.uuid4()) # UID of the event, each event needs a distinguished UID
+        event.add('dtstamp', datetime.datetime.now()) # Date of creation of the event
         # Set the event properties using the data from the Excel file
         event.add('summary', row[0].value)
          
         start = row[1].value # start Date of the event
         # Check if information in start date is really a date
         if type(start) is not datetime.datetime:
-            QMessageBox.critical(None, 'Error', f'{start} ist kein Startdatum! Excel überprüfen!')
+            messagebox.showerror('Error', f'{start} ist kein Startdatum! Excel überprüfen!')
         
         # strip the information in the cell of the time (unnecessary and looks ugly in ICS)
         start = start.date()
@@ -47,7 +49,7 @@ def excel_to_ics(excel_file_path, ics_file_path):
             
             # Check if information in end date is really a date
             if type(end) is not datetime.datetime:
-                QMessageBox.critical(None, 'Error', f'{end} ist kein Enddatum! Excel überprüfen!')
+                messagebox.showerror('Fehler', f'{end} ist kein Enddatum! Excel überprüfen!')
             
             # strip the information in the cell of the time (unnecessary)
             end = end.date()
@@ -64,75 +66,61 @@ def excel_to_ics(excel_file_path, ics_file_path):
         # Add the event to the calendar
         cal.add_component(event)
     # Write the calendar to the ICS file
+        # Write the calendar to the ICS file
     with open(ics_file_path, 'wb') as f:
         f.write(cal.to_ical())
 
+def browse_excel_file():
+    global excfilepath 
+    excfilepath = filedialog.askopenfilename(title='Excel-Datei zur Konvertierung auswählen', filetypes=[('Excel Dokument', '*.xlsx')]) 
+    # next two lines to only show the filename on the label. The complete path would be too long to print.
+    filename = os.path.basename(excfilepath)
+    excel_file_label.config(text="\n" + filename)
 
-class FileConverter(QtWidgets.QWidget):
-    def __init__(self):
-        super().__init__()
-        self.init_ui()
-        
-    def init_ui(self):
-        self.setGeometry(100, 100, 800, 600)
-        self.setWindowTitle('Excel2ical von buc @ hems.de')
-        # Create a layout
-        layout = QtWidgets.QVBoxLayout(self)
-        # Create an explanation for the FileDialog
-        label1 = QtWidgets.QLabel("Bitte die Termin-Exceldatei auswählen:")
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        label1.setFont(font)
-        layout.addWidget(label1)
-        # Create a file browser widget for selecting the Excel file
-        self.excel_file_browser = QtWidgets.QFileDialog()
-        self.excel_file_browser.setFileMode(QtWidgets.QFileDialog.ExistingFile)
-        self.excel_file_browser.setNameFilter("Excel Datei mit den Terminen (*.xlsx)")
-        # Create a line to seperate both file dialogs visually
-        layout.addWidget(self.excel_file_browser)
-        line1 = QtWidgets.QLabel()
-        line1.setFixedHeight(2)
-        line1.setStyleSheet("background-color: black;")
-        layout.addWidget(line1)
-        # Add another explanation line
-        label2 = QtWidgets.QLabel("Bitte hier die ICS Datei auswählen, bzw. neu erstellen:")
-        label2.setFont(font)
-        layout.addWidget(label2)
-        # Create another file browser widget for selecting the ICS file location
-        self.ics_file_browser = QtWidgets.QFileDialog()
-        self.ics_file_browser.setFileMode(QtWidgets.QFileDialog.AnyFile)
-        self.ics_file_browser.setNameFilter("ICS Datei für den Import in Outlook (*.ics)")
-        self.ics_file_browser.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
-        layout.addWidget(self.ics_file_browser)
-        #and another line
-        line2 = QtWidgets.QLabel()
-        line2.setFixedHeight(2)
-        line2.setStyleSheet("background-color: black;")
-        layout.addWidget(line2)
-        # Create a button to start the conversion
-        self.convert_button = QtWidgets.QPushButton("Konvertieren")
-        # increase font size of button 
-        fontbutton = QtGui.QFont()
-        fontbutton.setPointSize(16)
-        self.convert_button.setFont(fontbutton)
-        self.convert_button.clicked.connect(self.convert)
-        layout.addWidget(self.convert_button)
-        
-    def convert(self):
-        # Get the selected Excel file path
-        excel_file_path = self.excel_file_browser.selectedFiles()[0]
-        # Get the selected ICS file path
-        ics_file_path = self.ics_file_browser.selectedFiles()[0]
-        # Ensure that the file has the .ics extension
-        if not ics_file_path.endswith('.ics'):
-                ics_file_path += '.ics'
-        # Call the excel_to_ics function to convert the Excel data to an ICS file
-        excel_to_ics(excel_file_path, ics_file_path)
-        sys.exit()
+def browse_ics_file():
+    global icsfilepath 
+    icsfilepath = filedialog.asksaveasfilename(title='ICS-Datei bestimmen', filetypes=[('ICS Dokument', '*.ics')]) 
+    # next two lines to only show the filename on the label. The complete path would be too long to print.
+    filename = os.path.basename(icsfilepath)
+    ics_file_label.config(text="\n" + filename)
 
+def convert_files():
+    if not excfilepath or not icsfilepath:
+        messagebox.showerror('Fehler', 'Bitte sowohl eine Excel-Datei auswählen, als auch den Namen einer ICS-Datei bestimmen')
+    else:
+        excel_to_ics(excfilepath, icsfilepath)
+        messagebox.showinfo('Erfolg', 'Umwandlung erfolgreich')
 
-if __name__ == '__main__':
-    app = QtWidgets.QApplication([])
-    converter = FileConverter()
-    converter.show()
-    app.exec_()
+root = Tk()
+root.title('Excel2ical v2.0 (buc @ hems.de)')
+
+# Set the window size
+root.geometry("300x440")
+
+#load image and set make it a bit transparent
+pimage = PhotoImage(file="cal.png")
+pimage.alpha = 128
+
+#position image
+label1 =Label(root, image=pimage)
+
+# Add labels and buttons for the user to see the selected filenames
+ics_file_label = Label(root, text="\nKeinen ICS-Dateinamen bestimmt", font=("Helvetica", 10))
+browse_ics_button = Button(root, text="ICS-Dateinamen bestimmen", command=browse_ics_file, font=("Helvetica", 12))
+excel_file_label = Label(root, text="\nKeine Excel-Datei ausgewählt", font=("Helvetica", 10))
+browse_excel_button = Button(root, text="Excel-Datei auswählen", command=browse_excel_file, font=("Helvetica", 12))
+convert_button = Button(root, text="Go!", command=convert_files, font=("Helvetica", 14),bg="#ee2724")
+title_label = Label(root, text="Excel2ical v2.0", font=("Helvetica", 14))
+titlesub_label = Label(root, text="Wandelt die Excelterminliste in eine\nOutlook-importierbare ICS-Datei um.\n", font=("Helvetica", 10))
+
+label1.pack(side=TOP)
+title_label.pack(side=TOP)
+titlesub_label.pack(side=TOP)
+excel_file_label.pack(side=TOP)
+browse_excel_button.pack(side=TOP)
+ics_file_label.pack(side=TOP)
+browse_ics_button.pack(side=TOP)
+convert_button.pack(side=BOTTOM,pady=10)
+
+root.mainloop()
+
