@@ -126,7 +126,7 @@ browse_ics_button = Button(root, text="ICS-Dateinamen bestimmen", command=browse
 excel_file_label = Label(root, text="\nKeine Excel-Datei ausgewählt", font=("Helvetica", 10))
 browse_excel_button = Button(root, text="Excel-Datei auswählen", command=browse_excel_file, font=("Helvetica", 12))
 convert_button = Button(root, text="Go!", command=convert_files, font=("Helvetica", 14),bg="#ee2724")
-title_label = Label(root, text="Excel2ical v2.0", font=("Helvetica", 14))
+title_label = Label(root, text="Excel2ical v2.1", font=("Helvetica", 14))
 titlesub_label = Label(root, text="Wandelt die Excelterminliste in eine\nOutlook-importierbare ICS-Datei um.\n", font=("Helvetica", 10))
 
 label1.pack(side=TOP)
