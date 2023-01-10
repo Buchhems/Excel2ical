@@ -32,41 +32,45 @@ def excel_to_ics(excel_file_path, ics_file_path):
         event.add('summary', row[0].value)
          
         start = row[1].value # start Date of the event
-        # Check if information in start date is really a date
-        if type(start) is not datetime.datetime:
-            messagebox.showerror('Error', f'{start} ist kein Startdatum! Excel überprüfen!')
-        
-        # strip the information in the cell of the time (unnecessary and looks ugly in ICS)
-        start = start.date()
-        
-        # Combine date and time if time is given
-        if type(row[2].value) == datetime.time:
-            start = datetime.datetime.combine(row[1].value, row[2].value)
-        event.add('dtstart', start)
 
+        if not all([cell.value is None for cell in row]): # for empty rows: skip
+        
+            # Check if information in start date is really a date
+            if type(start) is not datetime.datetime:
+                messagebox.showerror('Fehler', f' Eintrag {start} ist kein Startdatum!')
+
+            # strip the information in the cell of the time (unnecessary and looks ugly in ICS)
+            startd = start.date()
+            
+            # Combine date and time if time is given
+            if type(row[2].value) == datetime.time:
+                startd = datetime.datetime.combine(row[1].value, row[2].value)
+            event.add('dtstart', startd)
+
+                    
+            if(row[3].value is not None):
+                end = row[3].value # end Date of the event
                 
-        if(row[3].value is not None):
-            end = row[3].value # end Date of the event
+                # Check if information in end date is really a date
+                if type(end) is not datetime.datetime:
+                    messagebox.showerror('Fehler', f'{end} ist kein Enddatum! Excel überprüfen!')
+                
+                # strip the information in the cell of the time (unnecessary)
+                endd = end.date()
+                               
+                if type(row[4].value) == datetime.time: # check if end time is given
+                        endd = datetime.datetime.combine(row[3].value, row[4].value)
+                
+                event.add('dtend', endd)
+                 
+            if(row[6].value is not None):
+                event.add('description', row[6].value)
+            if(row[7].value is not None):
+                event.add('location', row[7].value)
             
-            # Check if information in end date is really a date
-            if type(end) is not datetime.datetime:
-                messagebox.showerror('Fehler', f'{end} ist kein Enddatum! Excel überprüfen!')
-            
-            # strip the information in the cell of the time (unnecessary)
-            end = end.date()
-            
-            if type(row[4].value) == datetime.time: # check if end time is given
-                end = datetime.datetime.combine(row[3].value, row[4].value)
-            event.add('dtend', end)
+            # Add the event to the calendar
+            cal.add_component(event)
 
-        if(row[6].value is not None):
-            event.add('description', row[6].value)
-        if(row[7].value is not None):
-            event.add('location', row[7].value)
-        
-        # Add the event to the calendar
-        cal.add_component(event)
-    # Write the calendar to the ICS file
         # Write the calendar to the ICS file
     with open(ics_file_path, 'wb') as f:
         f.write(cal.to_ical())
