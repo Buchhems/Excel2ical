@@ -108,7 +108,7 @@ def resource_path(relative_path):
 
 root = Tk()
 root.iconbitmap(resource_path("excel2ics.ico"))
-root.title('Excel2ical v2.0 (buc @ hems.de)')
+root.title('Excel2ical v2.1 (buc @ hems.de)')
 
 # Set the window size
 root.geometry("350x470")
