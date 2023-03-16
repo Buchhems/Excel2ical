@@ -22,7 +22,7 @@ ICS_BUTTON_LABEL = "ICS-Datei bestimmen"
 EXCEL_FILE_LABEL = "Keine Excel-Datei ausgewählt"
 EXCEL_BUTTON_LABEL = "Exceldatei auswählen"
 CONVERT_BUTTON_TEXT = "ICS erzeugen"
-BG_CONVERT_BUTTON = "#ee2724"
+BG_COLOR_CONVERT_BUTTON = "#ee2724"
 
 def excel_to_ics(excel_file_path, ics_file_path):
     # Open the Excel file
@@ -89,8 +89,13 @@ def excel_to_ics(excel_file_path, ics_file_path):
             cal.add_component(event)
 
         # Write the calendar to the ICS file
-    with open(ics_file_path, 'wb') as f:
-        f.write(cal.to_ical())
+    try:
+        with open(ics_file_path, 'wb') as f:
+            f.write(cal.to_ical())
+      
+    except Exception as e:
+        print(f"Fehler: {str(e)}")
+
 
 def browse_excel_file():
     global exc_file_path
@@ -147,7 +152,7 @@ excel_file_label = Label(middle_frame, text=EXCEL_FILE_LABEL, font=FONT_LABEL)
 browse_excel_button = Button(middle_frame, text=EXCEL_BUTTON_LABEL, command=browse_excel_file, font=FONT_BUTTONS)
 ics_file_label = Label(middle_frame, text=ICS_FILE_LABEL, font=FONT_LABEL)
 browse_ics_button = Button(middle_frame, text=ICS_BUTTON_LABEL, command=browse_ics_file, font=FONT_BUTTONS)
-convert_button = Button(bottom_frame, text=CONVERT_BUTTON_TEXT, command=convert_files, font=FONT_CONVERT_BUTTON, bg=BG_CONVERT_BUTTON)
+convert_button = Button(bottom_frame, text=CONVERT_BUTTON_TEXT, command=convert_files, font=FONT_CONVERT_BUTTON, bg=BG_COLOR_CONVERT_BUTTON)
 
 #position labels, image and buttons
 hems_logo.grid(row=0, column=0, padx=4, pady=10)
