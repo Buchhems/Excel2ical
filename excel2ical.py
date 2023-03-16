@@ -88,14 +88,13 @@ def excel_to_ics(excel_file_path, ics_file_path):
             # Add the event to the calendar
             cal.add_component(event)
 
-        # Write the calendar to the ICS file
+    # Write the calendar to the ICS file, exception handling
     try:
         with open(ics_file_path, 'wb') as f:
             f.write(cal.to_ical())
       
     except Exception as e:
         print(f"Fehler: {str(e)}")
-
 
 def browse_excel_file():
     global exc_file_path
@@ -118,6 +117,7 @@ def convert_files():
         excel_to_ics(exc_file_path, ics_file_path)
         messagebox.showinfo('Erfolg', 'Die Datei ' + str(ics_file_path) + '\nwurde erfolgreich erzeugt')
 
+#important for pyinstaller
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -128,13 +128,15 @@ def resource_path(relative_path):
 
     return os.path.join(base_path, relative_path)
 
+#create window
 root = Tk()
 root.iconbitmap(resource_path(WINDOW_ICON))
 root.title(WINDOW_TITLE)
 
-# Set the window size
+# Set the window not resizable
 root.resizable(0, 0)
 
+#create frames (for coloring background)
 title_frame = Frame(root, bg=BG_COLOR)
 title_frame.grid()
 middle_frame = Frame(root)
@@ -142,11 +144,12 @@ middle_frame.grid()
 bottom_frame = Frame(root, bg=BG_COLOR)
 bottom_frame.grid()
 
-#load image and set make it a bit transparent
+#load image
 pimage = PhotoImage(file=resource_path(MASCOT_PIC))
 hems_logo = Label(title_frame, image=pimage, bg=BG_COLOR)
 hems_logo.image = pimage
 
+#create labels and buttons
 description_label = Label(title_frame, text=APP_DESCRIPTION, font=FONT_DESCRIPTION, bg=BG_COLOR)
 excel_file_label = Label(middle_frame, text=EXCEL_FILE_LABEL, font=FONT_LABEL)
 browse_excel_button = Button(middle_frame, text=EXCEL_BUTTON_LABEL, command=browse_excel_file, font=FONT_BUTTONS)
@@ -167,4 +170,3 @@ browse_ics_button.grid(row=5, column=0, pady=10, columnspan=2)
 convert_button.grid(row=7, column=0, padx=128, pady=10, columnspan=2)
 
 root.mainloop()
-
