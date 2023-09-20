@@ -39,51 +39,63 @@ def excel_to_ics(excel_file_path, ics_file_path):
     cal.add('version', '2.0')
     
     # Iterate over the rows in the sheet, starting from the second row, first row has the headlines
-    for row in sheet.iter_rows(min_row=2):
+    #for row in sheet.iter_rows(min_row=2):
+    for row_number, row in enumerate(sheet.iter_rows(min_row=4), start=4):
         # Create a new ICS event
         event = Event()
  
         event.add('uid', uuid.uuid4()) # UID of the event, each event needs a distinguished UID
         event.add('dtstamp', datetime.datetime.now()) # Date of creation of the event
         # Set the event properties using the data from the Excel file
-        event.add('summary', row[0].value)
+        event.add('summary', row[6].value)
          
-        start = row[1].value # start Date of the event
+        start = row[0].value # start Date of the event
 
         if not all([cell.value is None for cell in row]): # for empty rows: skip
         
             # Check if information in start date is really a date
             if type(start) is not datetime.datetime:
-                messagebox.showerror('Fehler', f' Eintrag {start} ist kein Startdatum!')
+                messagebox.showerror('Fehler', f'Eintrag "{start}" ist kein Startdatum.\nÜberspringe Zeile {row_number} in Excel...')
+                continue
 
             # strip the information in the cell of the time (unnecessary and looks ugly in ICS)
             startd = start.date()
             
             # Combine date and time if time is given
             if type(row[2].value) == datetime.time:
-                startd = datetime.datetime.combine(row[1].value, row[2].value)
+                startd = datetime.datetime.combine(row[0].value, row[2].value)
             event.add('dtstart', startd)
 
-                    
+
+            #now follows the enddate + endtime        
             if(row[3].value is not None):
-                end = row[3].value # end Date of the event
+                end = row[3].value # end date of the event
                 
                 # Check if information in end date is really a date
                 if type(end) is not datetime.datetime:
-                    messagebox.showerror('Fehler', f'{end} ist kein Enddatum!\nExcel überprüfen!')
+                    messagebox.showerror('Fehler', f'Eintrag "{end}" ist kein Enddatum.\nÜberspringe Zeile {row_number} in Excel...')
+                    continue
                 
                 # strip the information in the cell of the time (unnecessary)
                 endd = end.date()
                                
-                if type(row[4].value) == datetime.time: # check if end time is given
-                        endd = datetime.datetime.combine(row[3].value, row[4].value)
-                
+                if type(row[5].value) == datetime.time: # check if end time is given
+                    endd = datetime.datetime.combine(row[3].value, row[5].value)
+                else:
+                    endd = endd + datetime.timedelta(days=1) #needs to be done because otherwise it ends a day short
+
                 event.add('dtend', endd)
+          
+            # if no enddate exists but an end time then the start date is used as a date plus the end time
+            elif type(row[5].value) == datetime.time:
+                    endd = datetime.datetime.combine(row[0].value, row[5].value)
+                    event.add('dtend', endd)
+
                  
             if(row[6].value is not None):
-                event.add('description', row[6].value)
-            if(row[7].value is not None):
-                event.add('location', row[7].value)
+                event.add('description', row[7].value)
+            #if(row[7].value is not None):
+            #    event.add('location', row[7].value)
             
             # Add the event to the calendar
             cal.add_component(event)
